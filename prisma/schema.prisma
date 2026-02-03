@@ -1,11 +1,69 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
+}
+
+enum EnquiryMode {
+  GENERAL
+  FLEET
+  PARCEL
+  PART_EX
+  STOCK
+}
+
+enum EnquiryType {
+  QUICK_QUESTION
+  QUOTE
+  FLEET_ENQUIRY
+  PART_EXCHANGE
+}
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+model Enquiry {
+  id         String       @id @default(cuid())
+  createdAt  DateTime     @default(now())
+
+  mode       EnquiryMode
+  type       EnquiryType
+  status     EnquiryStatus @default(NEW)
+
+  name       String
+  email      String?
+  phone      String?
+  message    String
+
+  assignedTo String?
+
+  context    EnquiryContext?
+  partEx     PartExchangeDetails?
+}
+
+model EnquiryContext {
+  id          String   @id @default(cuid())
+  enquiryId   String   @unique
+  enquiry     Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+
+  pageUrl     String
+  referrer    String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  device      String?
+}
+
+model PartExchangeDetails {
+  id        String   @id @default(cuid())
+  enquiryId String   @unique
+  enquiry   Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+
+  reg       String
+  mileage   Int
 }
