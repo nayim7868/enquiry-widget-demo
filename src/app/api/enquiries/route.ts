@@ -27,7 +27,11 @@ export async function POST(req: Request) {
         email,
         phone,
         message: data.message,
+        companyName: data.companyName?.trim() || null,
+        fleetSizeBand: data.fleetSizeBand?.trim() || null,
+        timeframe: data.timeframe?.trim() || null,
 
+        // Context fields for tracking page and marketing data
         context: {
           create: {
             pageUrl,
@@ -38,6 +42,7 @@ export async function POST(req: Request) {
             device: data.device ?? null,
           },
         },
+
 
         partEx:
           data.mode === "PART_EX" || data.type === "PART_EXCHANGE"
