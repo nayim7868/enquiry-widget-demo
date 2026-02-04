@@ -9,6 +9,8 @@ type Enquiry = {
   type: "QUICK_QUESTION" | "QUOTE" | "FLEET_ENQUIRY" | "PART_EXCHANGE";
   status: "NEW" | "CONTACTED" | "CLOSED";
   priority: "HIGH" | "NORMAL" | "LOW";
+  queue: "GENERAL" | "FLEET" | "VALUATIONS";
+  assignedTo: string | null;
   slaDueAt: string | null;
   firstRespondedAt: string | null;
   name: string;
@@ -52,6 +54,7 @@ export default function AdminPage() {
   const [mode, setMode] = useState<string>("ALL");
   const [status, setStatus] = useState<string>("ALL");
   const [error, setError] = useState<string | null>(null);
+  const [queue, setQueue] = useState<string>("ALL");
 
   const fetchEnquiries = async () => {
     setLoading(true);
@@ -60,6 +63,8 @@ export default function AdminPage() {
       const params = new URLSearchParams();
       if (mode !== "ALL") params.set("mode", mode);
       if (status !== "ALL") params.set("status", status);
+      if (queue !== "ALL") params.set("queue", queue);
+
 
       const res = await fetch(`/api/enquiries?${params.toString()}`);
       const json = await res.json();
@@ -77,23 +82,26 @@ export default function AdminPage() {
   useEffect(() => {
     fetchEnquiries();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, status]);
+  }, [mode, status, queue]);
 
-  const updateStatus = async (id: string, newStatus: Enquiry["status"]) => {
+  const patchEnquiry = async (id: string, patch: any) => {
     const res = await fetch(`/api/enquiries/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
+      body: JSON.stringify(patch),
     });
     const json = await res.json();
     if (!res.ok || !json.ok) {
       alert(json?.error ?? "Failed to update");
-      return;
+      return false;
     }
-    // update local state
-    setItems((prev) =>
-      prev.map((x) => (x.id === id ? { ...x, status: newStatus } : x))
-    );
+    return true;
+  };
+
+  const updateStatus = async (id: string, newStatus: Enquiry["status"]) => {
+    const ok = await patchEnquiry(id, { status: newStatus });
+    if (!ok) return;
+    setItems((prev) => prev.map((x) => (x.id === id ? { ...x, status: newStatus } : x)));
   };
 
   const counts = useMemo(() => {
@@ -141,6 +149,20 @@ export default function AdminPage() {
             </select>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium">Queue</label>
+            <select
+              className="mt-1 rounded-lg border px-3 py-2"
+              value={queue}
+              onChange={(e) => setQueue(e.target.value)}
+            >
+              <option value="ALL">All</option>
+              <option value="GENERAL">GENERAL</option>
+              <option value="FLEET">FLEET</option>
+              <option value="VALUATIONS">VALUATIONS</option>
+            </select>
+          </div>
+
           <button
             type="button"
             onClick={fetchEnquiries}
@@ -172,6 +194,8 @@ export default function AdminPage() {
                 <th className="p-3">Name</th>
                 <th className="p-3">Contact</th>
                 <th className="p-3">Status</th>
+                <th className="p-3">Queue</th>
+                <th className="p-3">Assigned</th>
                 <th className="p-3">Context</th>
               </tr>
             </thead>
@@ -179,13 +203,13 @@ export default function AdminPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td className="p-4" colSpan={7}>
+                  <td className="p-4" colSpan={9}>
                     Loading...
                   </td>
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td className="p-4" colSpan={7}>
+                  <td className="p-4" colSpan={9}>
                     No enquiries yet.
                   </td>
                 </tr>
@@ -254,6 +278,42 @@ export default function AdminPage() {
                         <option value="CONTACTED">CONTACTED</option>
                         <option value="CLOSED">CLOSED</option>
                       </select>
+                    </td>
+
+                    <td className="p-3">
+                      <select
+                        className="rounded-lg border px-2 py-1"
+                        value={e.queue}
+                        onChange={async (ev) => {
+                          const newQueue = ev.target.value as Enquiry["queue"];
+                          const ok = await patchEnquiry(e.id, { queue: newQueue });
+                          if (!ok) return;
+                          setItems((prev) => prev.map((x) => (x.id === e.id ? { ...x, queue: newQueue } : x)));
+                        }}
+                      >
+                        <option value="GENERAL">GENERAL</option>
+                        <option value="FLEET">FLEET</option>
+                        <option value="VALUATIONS">VALUATIONS</option>
+                      </select>
+                    </td>
+
+                    <td className="p-3">
+                      <input
+                        className="w-40 rounded-lg border px-2 py-1"
+                        defaultValue={e.assignedTo ?? ""}
+                        placeholder="Unassigned"
+                        onBlur={async (ev) => {
+                          const value = ev.target.value.trim();
+                          const newAssigned = value === "" ? null : value;
+
+                          const ok = await patchEnquiry(e.id, { assignedTo: newAssigned });
+                          if (!ok) return;
+
+                          setItems((prev) =>
+                            prev.map((x) => (x.id === e.id ? { ...x, assignedTo: newAssigned } : x))
+                          );
+                        }}
+                      />
                     </td>
 
                     <td className="p-3">
