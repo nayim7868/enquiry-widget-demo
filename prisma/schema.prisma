@@ -43,6 +43,11 @@ model Enquiry {
   phone      String?
   message    String
 
+   // fleet info
+  companyName   String?
+  fleetSizeBand String?
+  timeframe     String?
+
   assignedTo String?
 
   context    EnquiryContext?
