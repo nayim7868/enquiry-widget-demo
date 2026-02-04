@@ -38,6 +38,11 @@ model Enquiry {
   type       EnquiryType
   status     EnquiryStatus @default(NEW)
 
+    // SLA + priority
+  priority        EnquiryPriority @default(NORMAL)
+  slaDueAt        DateTime?
+  firstRespondedAt DateTime?
+
   name       String
   email      String?
   phone      String?
@@ -75,4 +80,11 @@ model PartExchangeDetails {
   reg       String
   mileage   Int
 }
+
+enum EnquiryPriority {
+  HIGH
+  NORMAL
+  LOW
+}
+
 
