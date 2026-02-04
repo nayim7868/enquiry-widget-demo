@@ -1,5 +1,10 @@
 import EnquiryWidget from "@/components/EnquiryWidget";
 
+const PART_EX_INTENTS = [
+  { label: "Part exchange", mode: "PART_EX" as const, type: "PART_EXCHANGE" as const },
+  { label: "Quick question", mode: "GENERAL" as const, type: "QUICK_QUESTION" as const },
+];
+
 export default function PartExchangePage() {
   return (
     <main className="min-h-screen p-6">
@@ -7,15 +12,9 @@ export default function PartExchangePage() {
         title="Part exchange enquiry"
         defaultMode="PART_EX"
         defaultType="PART_EXCHANGE"
-        showChooser={false}
+        showChooser={true}
+        availableIntents={PART_EX_INTENTS}
       />
-      <p className="mt-4 text-sm text-gray-600">
-        Just a quick question? Use the{" "}
-        <a className="underline" href="/contact">
-          Contact page
-        </a>
-        .
-      </p>
     </main>
   );
 }

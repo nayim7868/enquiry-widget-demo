@@ -1,5 +1,10 @@
 import EnquiryWidget from "@/components/EnquiryWidget";
 
+const FLEET_INTENTS = [
+  { label: "Fleet enquiry", mode: "FLEET" as const, type: "FLEET_ENQUIRY" as const },
+  { label: "Quick question", mode: "GENERAL" as const, type: "QUICK_QUESTION" as const },
+];
+
 export default function FleetPage() {
   return (
     <main className="min-h-screen p-6">
@@ -7,15 +12,9 @@ export default function FleetPage() {
         title="Van fleets enquiry"
         defaultMode="FLEET"
         defaultType="FLEET_ENQUIRY"
-        showChooser={false}
+        showChooser={true}
+        availableIntents={FLEET_INTENTS}
       />
-      <p className="mt-4 text-sm text-gray-600">
-        Not a fleet enquiry? Use the{" "}
-        <a className="underline" href="/contact">
-          Contact page
-        </a>
-        .
-      </p>
     </main>
   );
 }

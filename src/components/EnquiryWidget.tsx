@@ -17,6 +17,7 @@ type Props = {
   defaultMode: EnquiryMode;
   defaultType: EnquiryType;
   showChooser?: boolean; // true on Contact page
+  availableIntents?: Array<{ label: string; mode: EnquiryMode; type: EnquiryType }>; // Filter which intents to show
 };
 
 const INTENTS: Array<{
@@ -35,6 +36,7 @@ export default function EnquiryWidget({
   defaultMode,
   defaultType,
   showChooser = false,
+  availableIntents = INTENTS,
 }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [serverMsg, setServerMsg] = useState<string | null>(null);
@@ -141,7 +143,7 @@ export default function EnquiryWidget({
         <div className="mb-6">
           <p className="mb-3 text-sm font-medium text-gray-700">What can we help you with?</p>
           <div className="flex flex-wrap gap-2">
-            {INTENTS.map((i) => {
+            {availableIntents.map((i) => {
               const selected = i.mode === mode && i.type === type;
               return (
                 <button
