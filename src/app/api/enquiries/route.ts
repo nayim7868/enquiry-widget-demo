@@ -19,6 +19,13 @@ export async function POST(req: Request) {
       data.pageUrl ??
       req.headers.get("referer") ??
       "unknown";
+    
+    const isFleet = data.mode === "FLEET" || data.type === "FLEET_ENQUIRY";
+    const isPartEx = data.mode === "PART_EX" || data.type === "PART_EXCHANGE";
+  
+     const queue = isFleet ? "FLEET" : isPartEx ? "VALUATIONS" : "GENERAL";
+  
+       
 
       const now = Date.now();
 
@@ -38,6 +45,7 @@ export async function POST(req: Request) {
       name: data.name,
       priority: priority as "HIGH" | "NORMAL",
       slaDueAt,
+      queue,
       email,
       phone,
       message: data.message,
