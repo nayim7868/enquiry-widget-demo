@@ -1,0 +1,85 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { CreateEnquirySchema } from "@/lib/validation";
+
+// Ensure we run in Node (SQLite driver doesn't work on Edge runtime)
+export const runtime = "nodejs";
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const data = CreateEnquirySchema.parse(body);
+
+    const email = data.email?.trim() ? data.email.trim() : null;
+    const phone = data.phone?.trim() ? data.phone.trim() : null;
+
+    // pageUrl is required in your DB schema for EnquiryContext
+    const pageUrl =
+      data.pageUrl ??
+      req.headers.get("referer") ??
+      "unknown";
+
+    const created = await prisma.enquiry.create({
+      data: {
+        mode: data.mode,
+        type: data.type,
+        name: data.name,
+        email,
+        phone,
+        message: data.message,
+
+        context: {
+          create: {
+            pageUrl,
+            referrer: data.referrer ?? null,
+            utmSource: data.utmSource ?? null,
+            utmMedium: data.utmMedium ?? null,
+            utmCampaign: data.utmCampaign ?? null,
+            device: data.device ?? null,
+          },
+        },
+
+        partEx:
+          data.mode === "PART_EX" || data.type === "PART_EXCHANGE"
+            ? {
+                create: {
+                  reg: data.reg!.trim(),
+                  mileage: data.mileage!,
+                },
+              }
+            : undefined,
+      },
+      include: { context: true, partEx: true },
+    });
+
+    return NextResponse.json({ ok: true, enquiry: created }, { status: 201 });
+  } catch (err: unknown) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: err instanceof Error ? err.message : "Unknown error",
+      },
+      { status: 400 }
+    );
+  }
+}
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const mode = searchParams.get("mode");
+  const status = searchParams.get("status");
+
+  const enquiries = await prisma.enquiry.findMany({
+    where: {
+      ...(mode ? { mode: mode as any } : {}),
+      ...(status ? { status: status as any } : {}),
+    },
+    orderBy: { createdAt: "desc" },
+    include: { context: true, partEx: true },
+  });
+
+  return NextResponse.json({ ok: true, enquiries });
+}
+
+
+
