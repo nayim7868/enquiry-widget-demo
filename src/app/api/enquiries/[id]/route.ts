@@ -27,11 +27,29 @@ export async function PATCH(req: Request, ctx: Ctx) {
     const body = await req.json();
     const data = PatchSchema.parse(body);
 
+    const current = await prisma.enquiry.findUnique({
+      where: { id },
+    });
+
+    if (!current) {
+      return NextResponse.json({ ok: false, error: "Enquiry not found" }, { status: 404 });
+    }
+
+    const statusChanging = data.status && data.status !== current.status;
+
+    const firstRespondedAt =
+      statusChanging &&
+      data.status === "CONTACTED" &&
+      !(current as { firstRespondedAt?: Date | null }).firstRespondedAt
+        ? new Date()
+        : undefined;
+
     const updated = await prisma.enquiry.update({
       where: { id },
       data: {
         ...(data.status ? { status: data.status } : {}),
         ...(data.assignedTo !== undefined ? { assignedTo: data.assignedTo } : {}),
+        ...(firstRespondedAt ? { firstRespondedAt } : {}),
       },
     });
 
