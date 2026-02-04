@@ -98,11 +98,15 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const mode = searchParams.get("mode");
   const status = searchParams.get("status");
+  const queue = searchParams.get("queue");
 
   const enquiries = await prisma.enquiry.findMany({
     where: {
       ...(mode ? { mode: mode as any } : {}),
       ...(status ? { status: status as any } : {}),
+      ...(mode ? { mode: mode as any } : {}),
+      ...(status ? { status: status as any } : {}),
+      ...(queue ? { queue: queue as any } : {}),
     },
     orderBy: { createdAt: "desc" },
     include: { context: true, partEx: true },
