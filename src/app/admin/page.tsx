@@ -14,6 +14,9 @@ type Enquiry = {
   message: string;
   context?: { pageUrl: string } | null;
   partEx?: { reg: string; mileage: number } | null;
+  companyName: string | null;
+  fleetSizeBand: string | null;
+  timeframe: string | null;
 };
 
 function timeAgo(iso: string) {
@@ -192,6 +195,13 @@ export default function AdminPage() {
                       {e.partEx && (
                         <div className="mt-2 text-xs text-gray-600">
                           Part-ex: {e.partEx.reg} · {e.partEx.mileage.toLocaleString()} miles
+                        </div>
+                      )}
+                      {(e.companyName || e.fleetSizeBand || e.timeframe) && (
+                        <div className="mt-2 text-xs text-gray-600">
+                          {e.companyName ? `Company: ${e.companyName}` : ""}
+                          {e.fleetSizeBand ? ` · Fleet: ${e.fleetSizeBand}` : ""}
+                          {e.timeframe ? ` · Timeframe: ${e.timeframe}` : ""}
                         </div>
                       )}
                     </td>
