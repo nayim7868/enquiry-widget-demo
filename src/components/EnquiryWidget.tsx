@@ -58,6 +58,10 @@ export default function EnquiryWidget({
           : undefined,
       reg: "",
       mileage: undefined,
+      companyName: "",
+      fleetSizeBand: "",
+      timeframe: "",
+
     }),
     [defaultMode, defaultType]
   );
@@ -77,6 +81,8 @@ export default function EnquiryWidget({
   const mode = watch("mode");
   const type = watch("type");
   const needsPartEx = mode === "PART_EX" || type === "PART_EXCHANGE";
+  const isFleet = mode === "FLEET" || type === "FLEET_ENQUIRY";
+
 
   const onSubmit = async (data: CreateEnquiryInput) => {
     setSubmitting(true);
@@ -317,6 +323,94 @@ export default function EnquiryWidget({
             </div>
           )}
         </div>
+
+        {isFleet && (
+          <div className="rounded-lg border-2 border-gray-200 bg-gray-50 p-5">
+            <p className="text-sm font-bold text-gray-900 mb-4">Fleet details (optional)</p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Company name
+                </label>
+                <input
+                  className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 ${
+                    errors.companyName
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : "border-gray-300 focus:border-black focus:ring-gray-200"
+                  }`}
+                  {...register("companyName")}
+                  placeholder="Your company"
+                />
+                {errors.companyName && (
+                  <div className="mt-1.5 flex items-start gap-1.5">
+                    <svg className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <p className="text-sm text-red-600 font-medium">{errors.companyName.message}</p>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Fleet size
+                </label>
+                <select
+                  className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 ${
+                    errors.fleetSizeBand
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : "border-gray-300 focus:border-black focus:ring-gray-200"
+                  }`}
+                  {...register("fleetSizeBand")}
+                >
+                  <option value="">Select (optional)</option>
+                  <option value="1-2">1–2</option>
+                  <option value="3-10">3–10</option>
+                  <option value="11-50">11–50</option>
+                  <option value="50+">50+</option>
+                </select>
+                {errors.fleetSizeBand && (
+                  <div className="mt-1.5 flex items-start gap-1.5">
+                    <svg className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <p className="text-sm text-red-600 font-medium">{errors.fleetSizeBand.message}</p>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Timeframe
+                </label>
+                <select
+                  className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 ${
+                    errors.timeframe
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : "border-gray-300 focus:border-black focus:ring-gray-200"
+                  }`}
+                  {...register("timeframe")}
+                >
+                  <option value="">Select (optional)</option>
+                  <option value="ASAP">ASAP</option>
+                  <option value="1-4 weeks">1–4 weeks</option>
+                  <option value="1-3 months">1–3 months</option>
+                  <option value="Browsing">Just browsing</option>
+                </select>
+                {errors.timeframe && (
+                  <div className="mt-1.5 flex items-start gap-1.5">
+                    <svg className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <p className="text-sm text-red-600 font-medium">{errors.timeframe.message}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
 
         {serverMsg && (
           <div
