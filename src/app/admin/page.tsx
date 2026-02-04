@@ -8,6 +8,9 @@ type Enquiry = {
   mode: "GENERAL" | "FLEET" | "PARCEL" | "PART_EX" | "STOCK";
   type: "QUICK_QUESTION" | "QUOTE" | "FLEET_ENQUIRY" | "PART_EXCHANGE";
   status: "NEW" | "CONTACTED" | "CLOSED";
+  priority: "HIGH" | "NORMAL" | "LOW";
+  slaDueAt: string | null;
+  firstRespondedAt: string | null;
   name: string;
   email: string | null;
   phone: string | null;
@@ -30,6 +33,18 @@ function timeAgo(iso: string) {
   const days = Math.floor(hrs / 24);
   return `${days}d ago`;
 }
+
+function slaLabel(slaDueAt: string | null, status: Enquiry["status"]) {
+  if (!slaDueAt) return null;
+  if (status !== "NEW") return null; // Only show SLA for new items
+
+  const due = new Date(slaDueAt).getTime();
+  const diffMins = Math.floor((due - Date.now()) / 60000);
+
+  if (diffMins >= 0) return { text: `Due in ${diffMins}m`, overdue: false };
+  return { text: `Overdue by ${Math.abs(diffMins)}m`, overdue: true };
+}
+
 
 export default function AdminPage() {
   const [items, setItems] = useState<Enquiry[]>([]);
@@ -175,12 +190,28 @@ export default function AdminPage() {
                   </td>
                 </tr>
               ) : (
-                items.map((e) => (
+                items.map((e) => {
+                  const sla = slaLabel(e.slaDueAt, e.status);
+                  return (
                   <tr key={e.id} className="border-t align-top">
                     <td className="p-3">
                       <div className="font-medium">{timeAgo(e.createdAt)}</div>
                       <div className="text-gray-500">
                         {new Date(e.createdAt).toLocaleString()}
+                      </div>
+                      <div className="mt-1 flex flex-wrap gap-2 text-xs">
+                        <span className="rounded-full border px-2 py-0.5">
+                          Priority: {e.priority}
+                        </span>
+                        {sla && (
+                          <span
+                            className={`rounded-full border px-2 py-0.5 ${
+                              sla.overdue ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+                            }`}
+                          >
+                            {sla.text}
+                          </span>
+                        )}
                       </div>
                     </td>
 
@@ -231,7 +262,8 @@ export default function AdminPage() {
                       </div>
                     </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>
