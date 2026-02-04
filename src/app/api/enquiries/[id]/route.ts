@@ -7,6 +7,7 @@ export const runtime = "nodejs";
 const PatchSchema = z.object({
   status: z.enum(["NEW", "CONTACTED", "CLOSED"]).optional(),
   assignedTo: z.string().max(100).optional().nullable(),
+  queue: z.enum(["GENERAL", "FLEET", "VALUATIONS"]).optional(),
 });
 
 type Params = { id: string };
@@ -26,6 +27,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
 
     const body = await req.json();
     const data = PatchSchema.parse(body);
+   
 
     const current = await prisma.enquiry.findUnique({
       where: { id },
