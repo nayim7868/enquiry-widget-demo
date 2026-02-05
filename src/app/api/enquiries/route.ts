@@ -104,8 +104,6 @@ export async function GET(req: Request) {
     where: {
       ...(mode ? { mode: mode as any } : {}),
       ...(status ? { status: status as any } : {}),
-      ...(mode ? { mode: mode as any } : {}),
-      ...(status ? { status: status as any } : {}),
       ...(queue ? { queue: queue as any } : {}),
     },
     orderBy: { createdAt: "desc" },

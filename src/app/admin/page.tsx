@@ -111,18 +111,20 @@ export default function AdminPage() {
   }, [items]);
 
   return (
-    <main className="min-h-screen p-6">
-      <div className="max-w-5xl">
-        <h1 className="text-2xl font-semibold">Admin – Enquiries</h1>
-        <p className="mt-1 text-gray-600">
-          Simple triage board backed by SQL (SQLite).
-        </p>
+    <main className="min-h-screen bg-gray-50 p-6 w-full">
+      <div className="w-full">
+        <div className="mb-6 pb-4 border-b border-gray-200">
+          <h1 className="text-3xl font-bold text-gray-900">Admin – Enquiries</h1>
+          <p className="mt-2 text-gray-600">
+            Simple triage board backed by SQL (SQLite).
+          </p>
+        </div>
 
-        <div className="mt-4 flex flex-wrap gap-3 items-end">
+        <div className="mt-6 flex flex-wrap gap-4 items-end bg-white p-4 rounded-lg shadow-sm border border-gray-200">
           <div>
-            <label className="block text-sm font-medium">Mode</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Mode</label>
             <select
-              className="mt-1 rounded-lg border px-3 py-2"
+              className="mt-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               value={mode}
               onChange={(e) => setMode(e.target.value)}
             >
@@ -136,9 +138,9 @@ export default function AdminPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Status</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
             <select
-              className="mt-1 rounded-lg border px-3 py-2"
+              className="mt-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
             >
@@ -150,9 +152,9 @@ export default function AdminPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Queue</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Queue</label>
             <select
-              className="mt-1 rounded-lg border px-3 py-2"
+              className="mt-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               value={queue}
               onChange={(e) => setQueue(e.target.value)}
             >
@@ -166,109 +168,126 @@ export default function AdminPage() {
           <button
             type="button"
             onClick={fetchEnquiries}
-            className="rounded-lg bg-black px-4 py-2 text-white"
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
           >
             Refresh
           </button>
 
-          <div className="ml-auto text-sm text-gray-700">
-            <span className="mr-3">NEW: {counts.NEW}</span>
-            <span className="mr-3">CONTACTED: {counts.CONTACTED}</span>
-            <span>CLOSED: {counts.CLOSED}</span>
+          <div className="ml-auto flex gap-4 text-sm font-semibold">
+            <span className="px-3 py-1.5 rounded-md bg-blue-100 text-blue-800">NEW: {counts.NEW}</span>
+            <span className="px-3 py-1.5 rounded-md bg-yellow-100 text-yellow-800">CONTACTED: {counts.CONTACTED}</span>
+            <span className="px-3 py-1.5 rounded-md bg-gray-100 text-gray-800">CLOSED: {counts.CLOSED}</span>
           </div>
         </div>
 
         {error && (
-          <div className="mt-4 rounded-lg border border-red-300 bg-red-50 p-3 text-red-800">
+          <div className="mt-4 rounded-lg border-2 border-red-400 bg-red-50 p-4 text-red-900 font-medium shadow-sm">
             {error}
           </div>
         )}
 
-        <div className="mt-6 overflow-x-auto rounded-xl border">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-left">
+        <div className="mt-6 w-full rounded-lg border border-gray-200 overflow-hidden shadow-sm bg-white">
+          <table className="w-full text-sm table-fixed">
+            <thead className="bg-gradient-to-r from-gray-700 to-gray-800 text-left">
               <tr>
-                <th className="p-3">Created</th>
-                <th className="p-3">Mode</th>
-                <th className="p-3">Type</th>
-                <th className="p-3">Name</th>
-                <th className="p-3">Contact</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Queue</th>
-                <th className="p-3">Assigned</th>
-                <th className="p-3">Context</th>
+                <th className="p-4 w-[12%] text-white font-semibold text-xs uppercase tracking-wider">Created</th>
+                <th className="p-4 w-[8%] text-white font-semibold text-xs uppercase tracking-wider">Mode</th>
+                <th className="p-4 w-[10%] text-white font-semibold text-xs uppercase tracking-wider">Type</th>
+                <th className="p-4 w-[25%] text-white font-semibold text-xs uppercase tracking-wider">Name</th>
+                <th className="p-4 w-[12%] text-white font-semibold text-xs uppercase tracking-wider">Contact</th>
+                <th className="p-4 w-[8%] text-white font-semibold text-xs uppercase tracking-wider">Status</th>
+                <th className="p-4 w-[10%] text-white font-semibold text-xs uppercase tracking-wider">Queue</th>
+                <th className="p-4 w-[8%] text-white font-semibold text-xs uppercase tracking-wider">Assigned</th>
+                <th className="p-4 w-[7%] text-white font-semibold text-xs uppercase tracking-wider">Context</th>
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td className="p-4" colSpan={9}>
-                    Loading...
+                  <td className="p-8 text-center text-gray-500" colSpan={9}>
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-2"></div>
+                      Loading...
+                    </div>
                   </td>
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td className="p-4" colSpan={9}>
+                  <td className="p-8 text-center text-gray-500" colSpan={9}>
                     No enquiries yet.
                   </td>
                 </tr>
               ) : (
-                items.map((e) => {
+                items.map((e, idx) => {
                   const sla = slaLabel(e.slaDueAt, e.status);
                   return (
-                  <tr key={e.id} className="border-t align-top">
-                    <td className="p-3">
-                      <div className="font-medium">{timeAgo(e.createdAt)}</div>
-                      <div className="text-gray-500">
+                  <tr key={e.id} className={`align-top hover:bg-gray-50 transition-colors ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                    <td className="p-4 break-words">
+                      <div className="font-semibold text-gray-900">{timeAgo(e.createdAt)}</div>
+                      <div className="text-gray-600 text-xs break-words mt-1">
                         {new Date(e.createdAt).toLocaleString()}
                       </div>
-                      <div className="mt-1 flex flex-wrap gap-2 text-xs">
-                        <span className="rounded-full border px-2 py-0.5">
-                          Priority: {e.priority}
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${
+                          e.priority === 'HIGH' ? 'bg-red-100 text-red-800 border border-red-300' :
+                          e.priority === 'NORMAL' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
+                          'bg-gray-100 text-gray-800 border border-gray-300'
+                        }`}>
+                          {e.priority}
                         </span>
                         {sla && (
                           <span
-                            className={`rounded-full border px-2 py-0.5 ${
-                              sla.overdue ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+                            className={`inline-flex items-center rounded-full px-3 py-1.5 text-xs font-bold shadow-sm ${
+                              sla.overdue 
+                                ? "bg-red-600 text-white border-2 border-red-700 animate-pulse" 
+                                : "bg-amber-500 text-white border-2 border-amber-600"
                             }`}
                           >
-                            {sla.text}
+                            ⏰ {sla.text}
                           </span>
                         )}
                       </div>
                     </td>
 
-                    <td className="p-3">{e.mode}</td>
-                    <td className="p-3">{e.type}</td>
+                    <td className="p-4 break-words">
+                      <span className="inline-flex items-center rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 border border-indigo-200">
+                        {e.mode}
+                      </span>
+                    </td>
+                    <td className="p-4 break-words">
+                      <span className="inline-flex items-center rounded-md bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700 border border-purple-200">
+                        {e.type}
+                      </span>
+                    </td>
 
-                    <td className="p-3">
-                      <div className="font-medium">{e.name}</div>
-                      <div className="text-gray-600 mt-1 line-clamp-3">
+                    <td className="p-4 break-words">
+                      <div className="font-semibold text-gray-900 break-words">{e.name}</div>
+                      <div className="text-gray-700 mt-2 line-clamp-3 break-words text-sm leading-relaxed">
                         {e.message}
                       </div>
                       {e.partEx && (
-                        <div className="mt-2 text-xs text-gray-600">
-                          Part-ex: {e.partEx.reg} · {e.partEx.mileage.toLocaleString()} miles
+                        <div className="mt-2 text-xs text-gray-700 break-words bg-blue-50 px-2 py-1 rounded border border-blue-200">
+                          <span className="font-semibold">Part-ex:</span> {e.partEx.reg} · {e.partEx.mileage.toLocaleString()} miles
                         </div>
                       )}
                       {(e.companyName || e.fleetSizeBand || e.timeframe) && (
-                        <div className="mt-2 text-xs text-gray-600">
-                          {e.companyName ? `Company: ${e.companyName}` : ""}
-                          {e.fleetSizeBand ? ` · Fleet: ${e.fleetSizeBand}` : ""}
-                          {e.timeframe ? ` · Timeframe: ${e.timeframe}` : ""}
+                        <div className="mt-2 text-xs text-gray-700 break-words bg-green-50 px-2 py-1 rounded border border-green-200">
+                          {e.companyName && <><span className="font-semibold">Company:</span> {e.companyName}</>}
+                          {e.fleetSizeBand && <> · <span className="font-semibold">Fleet:</span> {e.fleetSizeBand}</>}
+                          {e.timeframe && <> · <span className="font-semibold">Timeframe:</span> {e.timeframe}</>}
                         </div>
                       )}
                     </td>
 
-                    <td className="p-3">
-                      <div>{e.email ?? "-"}</div>
-                      <div>{e.phone ?? "-"}</div>
+                    <td className="p-4 break-words">
+                      <div className="text-gray-900 break-words font-medium">{e.email ?? <span className="text-gray-400">-</span>}</div>
+                      <div className="text-gray-700 break-words mt-1">{e.phone ?? <span className="text-gray-400">-</span>}</div>
                     </td>
 
-                    <td className="p-3">
+                    <td className="p-4">
                       <select
-                        className="rounded-lg border px-2 py-1"
+                        className="rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-900 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full"
                         value={e.status}
                         onChange={(ev) =>
                           updateStatus(e.id, ev.target.value as Enquiry["status"])
@@ -280,9 +299,9 @@ export default function AdminPage() {
                       </select>
                     </td>
 
-                    <td className="p-3">
+                    <td className="p-4">
                       <select
-                        className="rounded-lg border px-2 py-1"
+                        className="rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-900 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full"
                         value={e.queue}
                         onChange={async (ev) => {
                           const newQueue = ev.target.value as Enquiry["queue"];
@@ -297,9 +316,9 @@ export default function AdminPage() {
                       </select>
                     </td>
 
-                    <td className="p-3">
+                    <td className="p-4">
                       <input
-                        className="w-40 rounded-lg border px-2 py-1"
+                        className="w-full rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs text-gray-900 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder:text-gray-400"
                         defaultValue={e.assignedTo ?? ""}
                         placeholder="Unassigned"
                         onBlur={async (ev) => {
@@ -316,9 +335,15 @@ export default function AdminPage() {
                       />
                     </td>
 
-                    <td className="p-3">
-                      <div className="text-gray-600">
-                        {e.context?.pageUrl ?? "-"}
+                    <td className="p-4 break-words">
+                      <div className="text-gray-700 break-words text-xs font-mono truncate" title={e.context?.pageUrl ?? "-"}>
+                        {e.context?.pageUrl ? (
+                          <a href={e.context.pageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline">
+                            {e.context.pageUrl}
+                          </a>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
                       </div>
                     </td>
                   </tr>

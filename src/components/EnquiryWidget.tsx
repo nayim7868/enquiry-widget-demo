@@ -174,7 +174,7 @@ export default function EnquiryWidget({
             Name <span className="text-red-500">*</span>
           </label>
           <input
-            className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 ${
+            className={`w-full rounded-lg border px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 transition-colors focus:outline-none focus:ring-2 ${
               errors.name
                 ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                 : "border-gray-300 focus:border-black focus:ring-gray-200"
@@ -198,7 +198,7 @@ export default function EnquiryWidget({
           </label>
           <input
             type="email"
-            className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 ${
+            className={`w-full rounded-lg border px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 transition-colors focus:outline-none focus:ring-2 ${
               errors.email
                 ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                 : "border-gray-300 focus:border-black focus:ring-gray-200"
@@ -222,7 +222,7 @@ export default function EnquiryWidget({
           </label>
           <input
             type="tel"
-            className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 ${
+            className={`w-full rounded-lg border px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 transition-colors focus:outline-none focus:ring-2 ${
               errors.phone
                 ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                 : "border-gray-300 focus:border-black focus:ring-gray-200"
@@ -253,7 +253,7 @@ export default function EnquiryWidget({
                   Vehicle registration <span className="text-red-500">*</span>
                 </label>
                 <input
-                  className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 ${
+                  className={`w-full rounded-lg border px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 transition-colors focus:outline-none focus:ring-2 ${
                     errors.reg
                       ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                       : "border-gray-300 focus:border-black focus:ring-gray-200"
@@ -277,7 +277,7 @@ export default function EnquiryWidget({
                 </label>
                 <input
                   type="number"
-                  className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 ${
+                  className={`w-full rounded-lg border px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 transition-colors focus:outline-none focus:ring-2 ${
                     errors.mileage
                       ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                       : "border-gray-300 focus:border-black focus:ring-gray-200"
@@ -305,7 +305,7 @@ export default function EnquiryWidget({
             Message <span className="text-red-500">*</span>
           </label>
           <textarea
-            className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 resize-none ${
+            className={`w-full rounded-lg border px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 transition-colors focus:outline-none focus:ring-2 resize-none ${
               errors.message
                 ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                 : "border-gray-300 focus:border-black focus:ring-gray-200"
@@ -336,7 +336,7 @@ export default function EnquiryWidget({
                   Company name
                 </label>
                 <input
-                  className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 ${
+                  className={`w-full rounded-lg border px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 transition-colors focus:outline-none focus:ring-2 ${
                     errors.companyName
                       ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                       : "border-gray-300 focus:border-black focus:ring-gray-200"
@@ -359,7 +359,7 @@ export default function EnquiryWidget({
                   Fleet size
                 </label>
                 <select
-                  className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 ${
+                  className={`w-full rounded-lg border px-4 py-2.5 text-sm text-gray-900 transition-colors focus:outline-none focus:ring-2 ${
                     errors.fleetSizeBand
                       ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                       : "border-gray-300 focus:border-black focus:ring-gray-200"
@@ -387,7 +387,7 @@ export default function EnquiryWidget({
                   Timeframe
                 </label>
                 <select
-                  className={`w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 ${
+                  className={`w-full rounded-lg border px-4 py-2.5 text-sm text-gray-900 transition-colors focus:outline-none focus:ring-2 ${
                     errors.timeframe
                       ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                       : "border-gray-300 focus:border-black focus:ring-gray-200"

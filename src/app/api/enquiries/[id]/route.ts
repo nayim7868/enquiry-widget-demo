@@ -52,6 +52,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
         ...(data.status ? { status: data.status } : {}),
         ...(data.assignedTo !== undefined ? { assignedTo: data.assignedTo } : {}),
         ...(firstRespondedAt ? { firstRespondedAt } : {}),
+        ...(data.queue ? { queue: data.queue } : {}),
       },
     });
 
