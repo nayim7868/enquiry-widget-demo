@@ -66,7 +66,7 @@ Open:
 - Deployment using Postgres instead of SQLite for production hosting
 
 ## Screenshots
+![Admin triage](public/screenshots/admin.png)
 ![Contact chooser](public/screenshots/contact.png)
 ![Part exchange](public/screenshots/part-exchange.png)
 ![Van fleets](public/screenshots/van-fleets.png)
-![Admin triage](public/screenshots/admin.png)
