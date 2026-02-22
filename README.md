@@ -30,9 +30,10 @@ Many businesses collect enquiries from multiple pages, but operational pain come
 
 ## Tech stack
 - Next.js (App Router) + React + TypeScript
-- SQLite + Prisma ORM (migrations + client)
+- SQLite or PostgreSQL + Prisma ORM (migrations + client)
 - Zod validation + react-hook-form
 - TailwindCSS
+- Docker Compose (for local Postgres)
 
 ## Data model (high level)
 - `Enquiry`: core lead details + status, priority, SLA fields
@@ -40,11 +41,54 @@ Many businesses collect enquiries from multiple pages, but operational pain come
 - `PartExchangeDetails`: reg + mileage (only for part-ex)
 
 ## How to run locally
+
+### Option 1: SQLite (default, no setup required)
 ```bash
 npm install
 npx prisma migrate dev
 npm run dev
 ```
+
+### Option 2: PostgreSQL (using Docker)
+
+1. **Start PostgreSQL:**
+   ```bash
+   docker compose up -d
+   ```
+   This starts a Postgres 16 container on port 5432 with:
+   - User: `app`
+   - Password: `app`
+   - Database: `enquiry_demo`
+
+2. **Configure environment:**
+   Create a `.env.local` file (not committed) with:
+   ```env
+   DATABASE_URL="postgresql://app:app@localhost:5432/enquiry_demo?schema=public"
+   AUTH_SECRET="your-secret-key-here-minimum-32-characters-long"
+   ADMIN_EMAIL="admin@example.com"
+   ADMIN_PASSWORD_HASH_B64="your-base64-encoded-bcrypt-hash-here"
+   ```
+
+3. **Update Prisma schema:**
+   Change `provider = "sqlite"` to `provider = "postgresql"` in `prisma/schema.prisma`
+
+4. **Run migrations:**
+   ```bash
+   npx prisma migrate dev
+   ```
+
+5. **Start the app:**
+   ```bash
+   npm run dev
+   ```
+
+6. **Stop PostgreSQL (when done):**
+   ```bash
+   docker compose down
+   ```
+   To remove data volume: `docker compose down -v`
+
+**Note:** The `.env.local` file should contain your actual `DATABASE_URL` and is not committed to git.
 
 Open:
 
