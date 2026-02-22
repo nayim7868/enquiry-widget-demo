@@ -31,40 +31,40 @@ enum EnquiryStatus {
 }
 
 model Enquiry {
-  id         String       @id @default(cuid())
-  createdAt  DateTime     @default(now())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
 
-  mode       EnquiryMode
-  type       EnquiryType
-  status     EnquiryStatus @default(NEW)
+  mode   EnquiryMode
+  type   EnquiryType
+  status EnquiryStatus @default(NEW)
 
-    // SLA + priority
-  priority        EnquiryPriority @default(NORMAL)
-  slaDueAt        DateTime?
+  // SLA + priority
+  priority         EnquiryPriority @default(NORMAL)
+  slaDueAt         DateTime?
   firstRespondedAt DateTime?
 
   queue EnquiryQueue @default(GENERAL)
 
-  name       String
-  email      String?
-  phone      String?
-  message    String
+  name    String
+  email   String?
+  phone   String?
+  message String
 
-   // fleet info
+  // fleet info
   companyName   String?
   fleetSizeBand String?
   timeframe     String?
 
   assignedTo String?
 
-  context    EnquiryContext?
-  partEx     PartExchangeDetails?
+  context EnquiryContext?
+  partEx  PartExchangeDetails?
 }
 
 model EnquiryContext {
-  id          String   @id @default(cuid())
-  enquiryId   String   @unique
-  enquiry     Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  enquiryId String  @unique
+  enquiry   Enquiry @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
 
   pageUrl     String
   referrer    String?
@@ -75,12 +75,12 @@ model EnquiryContext {
 }
 
 model PartExchangeDetails {
-  id        String   @id @default(cuid())
-  enquiryId String   @unique
-  enquiry   Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  enquiryId String  @unique
+  enquiry   Enquiry @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
 
-  reg       String
-  mileage   Int
+  reg     String
+  mileage Int
 }
 
 enum EnquiryPriority {
@@ -95,3 +95,20 @@ enum EnquiryQueue {
   VALUATIONS
 }
 
+model AuditLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  actorEmail String
+  actorRole  String
+  action     String
+  entityType String
+  entityId   String
+  changes    Json
+
+  ip        String?
+  userAgent String?
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}

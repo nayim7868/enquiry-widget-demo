@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { requireSession, canMutate } from "@/lib/auth";
+import type { Prisma } from "@prisma/client";
 
 export const runtime = "nodejs";
 
@@ -40,7 +41,6 @@ export async function PATCH(req: Request, ctx: Ctx) {
     const body = await req.json();
     const data = PatchSchema.parse(body);
    
-
     const current = await prisma.enquiry.findUnique({
       where: { id },
     });
@@ -58,17 +58,61 @@ export async function PATCH(req: Request, ctx: Ctx) {
         ? new Date()
         : undefined;
 
-    const updated = await prisma.enquiry.update({
-      where: { id },
-      data: {
-        ...(data.status ? { status: data.status } : {}),
-        ...(data.assignedTo !== undefined ? { assignedTo: data.assignedTo } : {}),
-        ...(firstRespondedAt ? { firstRespondedAt } : {}),
-        ...(data.queue ? { queue: data.queue } : {}),
-      },
+    // Capture "before" state (only relevant fields)
+    const before = {
+      status: current.status,
+      queue: current.queue,
+      assignedTo: current.assignedTo,
+      firstRespondedAt: current.firstRespondedAt,
+    };
+
+    // Prepare update data
+    const updateData = {
+      ...(data.status ? { status: data.status } : {}),
+      ...(data.assignedTo !== undefined ? { assignedTo: data.assignedTo } : {}),
+      ...(firstRespondedAt ? { firstRespondedAt } : {}),
+      ...(data.queue ? { queue: data.queue } : {}),
+    };
+
+    // Extract IP and user agent
+    const forwardedFor = req.headers.get("x-forwarded-for");
+    const ip = forwardedFor ? forwardedFor.split(",")[0].trim() : null;
+    const userAgent = req.headers.get("user-agent") || null;
+
+    // Perform update and audit log creation in a transaction
+    const result = await prisma.$transaction(async (tx) => {
+      const updated = await tx.enquiry.update({
+        where: { id },
+        data: updateData,
+      });
+
+      // Capture "after" state (only relevant fields)
+      const after = {
+        status: updated.status,
+        queue: updated.queue,
+        assignedTo: updated.assignedTo,
+        firstRespondedAt: updated.firstRespondedAt,
+      };
+
+      // Create audit log
+      // @ts-expect-error - Prisma transaction type inference issue, but auditLog exists at runtime
+      await tx.auditLog.create({
+        data: {
+          actorEmail: session.email,
+          actorRole: session.role,
+          action: "ENQUIRY_UPDATE",
+          entityType: "Enquiry",
+          entityId: id,
+          changes: { before, after },
+          ip,
+          userAgent,
+        },
+      });
+
+      return updated;
     });
 
-    return NextResponse.json({ ok: true, enquiry: updated });
+    return NextResponse.json({ ok: true, enquiry: result });
   } catch (err: unknown) {
     return NextResponse.json(
       { ok: false, error: err instanceof Error ? err.message : "Unknown error" },
