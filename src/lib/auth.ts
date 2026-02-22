@@ -40,6 +40,47 @@ export function canMutate(role: Role) {
   return role === "ADMIN" || role === "ANALYST";
 }
 
+/**
+ * Extract session cookie value from Request headers
+ */
+function getSessionCookieValue(req: Request): string | null {
+  const cookieHeader = req.headers.get("cookie");
+  if (!cookieHeader) return null;
+
+  const cookies = cookieHeader.split(";").map((c) => c.trim());
+  for (const cookie of cookies) {
+    const [name, ...valueParts] = cookie.split("=");
+    if (name === COOKIE_NAME && valueParts.length > 0) {
+      return valueParts.join("="); // Rejoin in case value contains =
+    }
+  }
+  return null;
+}
+
+/**
+ * Get session from Request (reads and verifies JWT cookie)
+ * Returns session user or null if missing/invalid
+ */
+export async function getSessionFromRequest(req: Request): Promise<SessionUser | null> {
+  const token = getSessionCookieValue(req);
+  if (!token) return null;
+  return verifySession(token);
+}
+
+/**
+ * Require valid session from Request
+ * Returns Response with 401 if missing/invalid, otherwise returns { session }
+ */
+export async function requireSession(
+  req: Request
+): Promise<Response | { session: SessionUser }> {
+  const session = await getSessionFromRequest(req);
+  if (!session) {
+    return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+  return { session };
+}
+
 // Auth config helpers - never sanitize values used for authentication
 
 /**

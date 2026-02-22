@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
+import { requireSession, canMutate } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,17 @@ type Ctx = { params: Params | Promise<Params> };
 
 export async function PATCH(req: Request, ctx: Ctx) {
   try {
+    const authResult = await requireSession(req);
+    if (authResult instanceof Response) {
+      return authResult;
+    }
+    const { session } = authResult;
+
+    // Enforce RBAC: only ADMIN and ANALYST can mutate
+    if (!canMutate(session.role)) {
+      return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
+    }
+
     // Works whether params is an object or a Promise (Next 15+ quirks)
     const { id } = await Promise.resolve(ctx.params);
 

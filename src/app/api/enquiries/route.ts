@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { CreateEnquirySchema } from "@/lib/validation";
 import { Prisma } from "@prisma/client";
+import { requireSession } from "@/lib/auth";
 
 // Ensure we run in Node (SQLite driver doesn't work on Edge runtime)
 export const runtime = "nodejs";
@@ -95,6 +96,12 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
+  const authResult = await requireSession(req);
+  if (authResult instanceof Response) {
+    return authResult;
+  }
+  const { session } = authResult;
+
   const { searchParams } = new URL(req.url);
   const mode = searchParams.get("mode");
   const status = searchParams.get("status");
