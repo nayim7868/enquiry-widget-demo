@@ -1,22 +1,30 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
-declare global {
-  // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient; pgPool?: Pool };
+
+function getPool() {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) throw new Error("DATABASE_URL is not set");
+  // Reuse pool across HMR in dev
+  const pool =
+    globalForPrisma.pgPool ??
+    new Pool({
+      connectionString,
+      max: 10,
+    });
+  if (process.env.NODE_ENV !== "production") globalForPrisma.pgPool = pool;
+  return pool;
 }
 
-export const prisma =
-  global.prisma ??
-  (() => {
-    const adapter = new PrismaBetterSqlite3({
-      url: process.env.DATABASE_URL || "file:./dev.db",
-    });
+function makePrisma() {
+  const adapter = new PrismaPg(getPool());
+  return new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+  });
+}
 
-    return new PrismaClient({
-      adapter,
-      log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
-    });
-  })();
-
-if (process.env.NODE_ENV !== "production") global.prisma = prisma;
+export const prisma = globalForPrisma.prisma ?? makePrisma();
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
