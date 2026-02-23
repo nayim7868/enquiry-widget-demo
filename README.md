@@ -29,11 +29,13 @@ Many businesses collect enquiries from multiple pages, but operational pain come
   - First response timestamp (set when moved to CONTACTED)
 
 ## Tech stack
-- Next.js (App Router) + React + TypeScript
+- Next.js 16 (App Router) + React + TypeScript
 - SQLite or PostgreSQL + Prisma ORM (migrations + client)
 - Zod validation + react-hook-form
 - TailwindCSS
 - Docker Compose (for local Postgres)
+
+**Note:** This project uses Next.js 16's `proxy` convention (migrated from `middleware` using `@next/codemod`).
 
 ## Data model (high level)
 - `Enquiry`: core lead details + status, priority, SLA fields

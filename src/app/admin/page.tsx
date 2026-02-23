@@ -67,6 +67,13 @@ export default function AdminPage() {
 
 
       const res = await fetch(`/api/enquiries?${params.toString()}`);
+      
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await res.text();
+        throw new Error(`Expected JSON but got ${contentType}. Response: ${text.substring(0, 100)}`);
+      }
+      
       const json = await res.json();
 
       if (!res.ok || !json.ok) throw new Error(json?.error ?? "Failed to load");
