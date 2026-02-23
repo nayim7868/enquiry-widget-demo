@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "AuditLog" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "actorEmail" TEXT NOT NULL,
     "actorRole" TEXT NOT NULL,
     "action" TEXT NOT NULL,
