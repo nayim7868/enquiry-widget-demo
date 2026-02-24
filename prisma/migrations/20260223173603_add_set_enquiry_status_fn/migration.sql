@@ -1,0 +1,122 @@
+-- CreateFunction
+CREATE OR REPLACE FUNCTION set_enquiry_status(
+  p_enquiry_id text,
+  p_new_status text,
+  p_actor_email text,
+  p_actor_role text DEFAULT 'ADMIN',
+  p_user_agent text DEFAULT NULL,
+  p_ip text DEFAULT NULL
+)
+RETURNS TABLE (
+  "id" text,
+  "createdAt" timestamp(3),
+  "mode" text,
+  "type" text,
+  "status" text,
+  "priority" text,
+  "slaDueAt" timestamp(3),
+  "firstRespondedAt" timestamp(3),
+  "queue" text,
+  "name" text,
+  "email" text,
+  "phone" text,
+  "message" text,
+  "companyName" text,
+  "fleetSizeBand" text,
+  "timeframe" text,
+  "assignedTo" text
+) AS $$
+DECLARE
+  v_current_row RECORD;
+  v_new_first_responded_at timestamp(3);
+  v_before_status text;
+  v_before_first_responded_at timestamp(3);
+BEGIN
+  -- Find the current enquiry row by id
+  SELECT * INTO v_current_row
+  FROM "Enquiry"
+  WHERE "id" = p_enquiry_id;
+
+  -- If not found, return no rows (API will treat as 404)
+  IF NOT FOUND THEN
+    RETURN;
+  END IF;
+
+  -- Store before values for audit log
+  v_before_status := v_current_row."status";
+  v_before_first_responded_at := v_current_row."firstRespondedAt";
+
+  -- Compute the new firstRespondedAt:
+  -- If p_new_status = 'CONTACTED' and current "firstRespondedAt" is null, set to now()
+  -- Otherwise keep existing value
+  IF p_new_status = 'CONTACTED' AND v_current_row."firstRespondedAt" IS NULL THEN
+    v_new_first_responded_at := NOW();
+  ELSE
+    v_new_first_responded_at := v_current_row."firstRespondedAt";
+  END IF;
+
+  -- Update the row's "status" and "firstRespondedAt"
+  UPDATE "Enquiry"
+  SET
+    "status" = p_new_status::"EnquiryStatus",
+    "firstRespondedAt" = v_new_first_responded_at
+  WHERE "id" = p_enquiry_id;
+
+  -- Insert an "AuditLog" row
+  INSERT INTO "AuditLog" (
+    "id",
+    "createdAt",
+    "actorEmail",
+    "actorRole",
+    "action",
+    "entityType",
+    "entityId",
+    "changes",
+    "userAgent",
+    "ip"
+  ) VALUES (
+    gen_random_uuid()::text,
+    NOW(),
+    p_actor_email,
+    p_actor_role,
+    'ENQUIRY_UPDATE',
+    'Enquiry',
+    p_enquiry_id,
+    jsonb_build_object(
+      'before', jsonb_build_object(
+        'status', v_before_status,
+        'firstRespondedAt', v_before_first_responded_at
+      ),
+      'after', jsonb_build_object(
+        'status', p_new_status,
+        'firstRespondedAt', v_new_first_responded_at
+      )
+    ),
+    p_user_agent,
+    p_ip
+  );
+
+  -- Return the updated enquiry row
+  RETURN QUERY
+  SELECT
+    e."id",
+    e."createdAt",
+    e."mode",
+    e."type",
+    e."status",
+    e."priority",
+    e."slaDueAt",
+    e."firstRespondedAt",
+    e."queue",
+    e."name",
+    e."email",
+    e."phone",
+    e."message",
+    e."companyName",
+    e."fleetSizeBand",
+    e."timeframe",
+    e."assignedTo"
+  FROM "Enquiry" e
+  WHERE e."id" = p_enquiry_id;
+END;
+$$ LANGUAGE plpgsql;
