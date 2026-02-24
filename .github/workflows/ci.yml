@@ -73,7 +73,25 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Verify auth environment variables
+        run: |
+          echo "Checking required env vars are present (not printing values)..."
+          if [ -z "$AUTH_SECRET" ]; then echo "ERROR: AUTH_SECRET is missing"; exit 1; fi
+          if [ -z "$ADMIN_EMAIL" ]; then echo "ERROR: ADMIN_EMAIL is missing"; exit 1; fi
+          if [ -z "$ADMIN_PASSWORD_HASH_B64" ]; then echo "ERROR: ADMIN_PASSWORD_HASH_B64 is missing"; exit 1; fi
+          if [ -z "$E2E_ADMIN_EMAIL" ]; then echo "ERROR: E2E_ADMIN_EMAIL is missing"; exit 1; fi
+          if [ -z "$E2E_ADMIN_PASSWORD" ]; then echo "ERROR: E2E_ADMIN_PASSWORD is missing"; exit 1; fi
+          if [ -z "$DATABASE_URL" ]; then echo "ERROR: DATABASE_URL is missing"; exit 1; fi
+          echo "AUTH_SECRET length: ${#AUTH_SECRET} (should be >= 32)"
+          echo "ADMIN_EMAIL: ${ADMIN_EMAIL}"
+          echo "E2E_ADMIN_EMAIL: ${E2E_ADMIN_EMAIL}"
+          echo "ADMIN_PASSWORD_HASH_B64 length: ${#ADMIN_PASSWORD_HASH_B64}"
+          echo "E2E_ADMIN_PASSWORD length: ${#E2E_ADMIN_PASSWORD}"
+          echo "All required env vars are present"
+
       - name: Run E2E tests
+        # Job-level env vars (set above) are automatically available to all steps
+        # Playwright's webServer (npm run dev) will inherit these env vars
         run: npm run test:e2e
 
       - name: Upload Playwright report

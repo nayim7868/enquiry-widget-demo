@@ -50,9 +50,32 @@ test("public enquiry -> admin triage -> mark contacted", async ({ page }) => {
   // Fill login form
   await page.getByLabel("Email").fill(adminEmail);
   await page.getByLabel("Password").fill(adminPassword);
+
+  // Wait for login API response before clicking (fail fast on auth errors)
+  const loginResponsePromise = page.waitForResponse(
+    (response) =>
+      response.url().includes("/api/admin/login") &&
+      response.request().method() === "POST"
+  );
+
+  // Click sign in
   await page.getByRole("button", { name: "Sign in" }).click();
 
-  // Wait for admin page to load
+  // Wait for and assert login API response
+  const loginResponse = await loginResponsePromise;
+  const loginResponseBody = await loginResponse.json().catch(() => ({}));
+
+  if (!loginResponse.ok()) {
+    const status = loginResponse.status();
+    const errorMsg = loginResponseBody.error || "Unknown error";
+    throw new Error(
+      `Login API failed with status ${status}: ${errorMsg}. ` +
+      `Check that ADMIN_EMAIL, ADMIN_PASSWORD_HASH_B64, and AUTH_SECRET are correctly configured. ` +
+      `Password used: ${adminPassword.substring(0, 3)}*** (verify it matches the hash)`
+    );
+  }
+
+  // Only after successful login, check redirect
   await expect(page).toHaveURL(/\/admin$/, { timeout: 10000 });
   await expect(page.getByRole("heading", { name: /Admin.*Enquiries/i })).toBeVisible();
 

@@ -260,14 +260,14 @@ Unit tests cover:
 **PowerShell (Windows):**
 ```powershell
 $env:E2E_ADMIN_EMAIL="admin@example.com"
-$env:E2E_ADMIN_PASSWORD="your-password"
+$env:E2E_ADMIN_PASSWORD="Bristol#2026"
 npm run test:e2e
 ```
 
 **Bash (Linux/Mac):**
 ```bash
 export E2E_ADMIN_EMAIL="admin@example.com"
-export E2E_ADMIN_PASSWORD="your-password"
+export E2E_ADMIN_PASSWORD="Bristol#2026"
 npm run test:e2e
 ```
 
