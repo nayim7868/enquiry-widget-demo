@@ -108,12 +108,12 @@ This project was intentionally extended beyond a basic demo to demonstrate:
 └────────┬────────┘
          │
          ▼
-┌─────────────────┐
-│  Protected APIs │
-│  GET /api/enquiries │
+┌────────────────────────────┐
+│  Protected APIs            │
+│  GET /api/enquiries        │
 │  PATCH /api/enquiries/[id] │
-│  GET /api/admin/triage │
-└────────┬────────┘
+│  GET /api/admin/triagekknlk│
+└────────┬───────────────────┘
          │
          ▼
 ┌─────────────────┐
