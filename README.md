@@ -321,14 +321,22 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs on push and pull reque
 
 ## Screenshots
 
-_To be added:_
-- [ ] Admin triage board
-- [ ] Contact form
-- [ ] Part-exchange form
-- [ ] Van fleets form
+![image (1)](https://github.com/user-attachments/assets/4647f363-7b19-451e-906f-4498e5137773)
+
+<img width="1175" height="1629" alt="image" src="https://github.com/user-attachments/assets/962590cb-133f-49e5-82c8-94c9ae8cd90d" />
+
+![image (2)](https://github.com/user-attachments/assets/a1f94b44-4fc3-4c18-8deb-d7db0acc986a)
+
+![image (3)](https://github.com/user-attachments/assets/f94ac26a-b47a-4a67-a300-012dc82d7e1b)
+
+![image (4)](https://github.com/user-attachments/assets/4612a480-89b6-406f-b8ea-88bba344e15f)
+
+![image (5)](https://github.com/user-attachments/assets/b2421a8e-1bbc-4608-ba88-600b5a434aeb)
+
+![image (6)](https://github.com/user-attachments/assets/5001337f-5a39-4b25-9d89-7883e82c26c6)
+
 
 ## Learning Outcomes
-
 This project provided hands-on experience with:
 
 - **Framework/runtime migration** - Next.js 16 middleware → proxy migration, Prisma 7 adapter requirements
