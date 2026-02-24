@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Enquiry = {
   id: string;
@@ -49,12 +50,29 @@ function slaLabel(slaDueAt: string | null, status: Enquiry["status"]) {
 
 
 export default function AdminPage() {
+  const router = useRouter();
   const [items, setItems] = useState<Enquiry[]>([]);
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<string>("ALL");
   const [status, setStatus] = useState<string>("ALL");
   const [error, setError] = useState<string | null>(null);
   const [queue, setQueue] = useState<string>("ALL");
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/admin/logout", {
+        method: "POST",
+      });
+      if (res.ok) {
+        router.push("/admin/login");
+        router.refresh();
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+      // Still redirect even if request fails
+      router.push("/admin/login");
+    }
+  };
 
   const fetchEnquiries = async () => {
     setLoading(true);
@@ -120,11 +138,20 @@ export default function AdminPage() {
   return (
     <main className="min-h-screen bg-gray-50 p-6 w-full">
       <div className="w-full">
-        <div className="mb-6 pb-4 border-b border-gray-200">
-          <h1 className="text-3xl font-bold text-gray-900">Admin – Enquiries</h1>
-          <p className="mt-2 text-gray-600">
-            Simple triage board backed by SQL (SQLite).
-          </p>
+        <div className="mb-6 pb-4 border-b border-gray-200 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Admin – Enquiries</h1>
+            <p className="mt-2 text-gray-600">
+              Simple triage board backed by SQL (SQLite).
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+          >
+            Logout
+          </button>
         </div>
 
         <div className="mt-6 flex flex-wrap gap-4 items-end bg-white p-4 rounded-lg shadow-sm border border-gray-200">
